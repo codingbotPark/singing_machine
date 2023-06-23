@@ -29,9 +29,8 @@ def GetName(datas):
         result.append(data['title'])
     return result
 
-# 메인 함수
-while True:
-    os.system('clear')
+
+def selectSong():
     song = input('부르고 싶은 곡을 입력해주세요\n') 
 
     if CheckInput(song) != "":
@@ -56,3 +55,12 @@ while True:
     input('\n원하시는 영상을 선택해주세요: ')
 
     time.sleep(60)
+
+# 메인 함수
+currentMode = ''
+while True:
+    os.system('clear')
+    print('1. 노래방 모드')
+    print('2. 노래 녹음 모드')
+
+    selectSong()
