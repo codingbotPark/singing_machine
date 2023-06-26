@@ -25,7 +25,7 @@ def GetName(datas):
     return result
 
 
-def selectSong():
+def addSong():
 
     while True:
         song = input('부르고 싶은 곡을 입력해주세요(나가기 = exit) >>> ') 
@@ -36,7 +36,8 @@ def selectSong():
             continue
 
     
-        songList = SearchSong('TJ노래방 '+song)
+        # songList = SearchSong('TJ노래방 '+song)
+        songList = SearchSong(song)
 
         if len(songList) < 1:
             print("존재하지 않는 곡입니다. 다시 입력해주세요.")
@@ -47,11 +48,10 @@ def selectSong():
             print(f"{index}: {videoName}")
     
         selectedVideo = input('원하시는 영상을 선택해주세요 >>> ')
-        value = GetNameAndAdd(songList)
-
-        splitingMusic(value[videoNames[selectedVideo]])
-
-        break
+        songAddrs = GetNameAndAdd(songList)
+        print(songAddrs[videoNames[int(selectedVideo)]])
+        splitingMusic.execute(songAddrs[videoNames[int(selectedVideo)]])
+        break   
         
 
 
@@ -66,7 +66,7 @@ def execute():
     currentMode = ''
     while True:
         os.system('clear')
-        print('1. 노래방 부르기')
+        print('1. 노래  부르기')
         print('2. 노래 추가')
         print('3. 노래 녹음하기')
         print('4. 종료')
@@ -81,7 +81,7 @@ def execute():
         if (category == '1'):
             print(1)
         elif (category == '2'):
-            selectSong()
+            addSong()
         elif (category == '3'):
             print(3)
         else:
