@@ -11,14 +11,17 @@ def downloadMusic(link):
     yt = YouTube(link)
     videoTitle = yt.title
     videoChannel = yt.channel_id
+    print("--------")
     print(videoTitle,videoChannel)
+    print("--------")
 
     makeMusicsDir()
 
     path = os.path.join(outputPath,videoTitle+'_'+videoChannel)
 
     yt.streams.filter(only_audio=True).first().download(output_path=path,filename=f'{videoTitle}.mp3')
-    return yt
+
+    return {'videoTitle':videoTitle,'videoChannel':videoChannel}
 
 def downloadVideo(link):
 

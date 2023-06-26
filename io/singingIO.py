@@ -28,7 +28,7 @@ def GetName(datas):
 def addSong():
 
     while True:
-        song = input('부르고 싶은 곡을 입력해주세요(나가기 = exit) >>> ') 
+        song = input('저장하고 싶은 곡을 입력해주세요(나가기 = exit) >>> ') 
 
         if (song == "exit"): break
         elif (song == ""):
@@ -52,8 +52,12 @@ def addSong():
         print(songAddrs[videoNames[int(selectedVideo)]])
         splitingMusic.execute(songAddrs[videoNames[int(selectedVideo)]])
         break   
-        
 
+def singSong():
+    
+    while True:
+        song = input('부르고 싶은 곡을 입력해주세요')
+        
 
 
 # -----
