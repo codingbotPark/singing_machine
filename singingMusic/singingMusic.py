@@ -1,49 +1,93 @@
+from multiprocessing import Process
 import pyaudio
+import wave
+import numpy as np
+import threading
 
+# 음악 파일 경로
+music_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/accompaniment.wav"
+vocal_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/vocals.wav"
 
-chunk = 1024
-format = pyaudio.paInt16
-channels = 2
-rate = 44100
+# 오디오 설정
+chunk = 1024  # 버퍼 크기
+format = pyaudio.paInt16  # 샘플 형식
+channels = 2  # 채널 수
+rate = 44100  # 샘플링 레이트
 
-# 음악 실행
-def play_music():
+class PlayMusic(threading.Thread):
+    def __init__(self,musciFilePath):
+        super().__init__()
+        self.musciFilePath = musciFilePath
+    def run(self):
+        wf = wave.open(self.musciFilePath, 'rb')
 
-    p = pyaudio.PyAudio()
-    stream = p.open(
-        format=format,
-        channels=channels,
-        rate=rate,
-        output=True
-    )
-    data = wf.readframes(chunk)
+        p = pyaudio.PyAudio()
+        stream = p.open(format=format,
+                        channels=channels,
+                        rate=rate,
+                        output=True)
 
-    while data:
-        stream.write(data)
         data = wf.readframes(chunk)
 
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+        while data:
+            stream.write(data)
+            data = wf.readframes(chunk)
 
-# 마이크로 입력 함수
-def mic_input():
-    p = pyaudio.PyAudio()
-    stream = p.open(format=format,
-                    channels=channels,
-                    rate=rate,
-                    input=True,
-                    frames_per_buffer=chunk)
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
 
-    stream.start_stream()
+class MicInput(threading.Thread):
+    def __init__(self,vocalFile):
+        super().__init__()
+        self.vocalFile = vocalFile
+    def run(self):
+        wf = wave.open(vocal_file, 'rb')
 
-    while True:
-        data = stream.read(chunk)
-        # 마이크로 입력 데이터 처리 (원하는 동작 수행)
+        p = pyaudio.PyAudio()
+        vocal_stream = p.open(format=format,
+                        channels=channels,
+                        rate=rate,
+                        output=True,
+                        frames_per_buffer=chunk)
 
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+        mic_stream = p.open(format=format,
+                        channels=channels,
+                        rate=rate,
+                        input=True)
 
-# 음악 재생 시작
-play_music()
+        vocalData = wf.readframes(chunk)
+        while vocalData:
+            micData = mic_stream.read(chunk)
+            audio = np.frombuffer(micData,dtype=np.int16)
+            amplitude = np.max(np.max(np.abs(audio)))
+            print("마이크 진폭:", amplitude)
+
+            # 3000 이상일 땐 말하는것
+            if (amplitude > 3000):
+                vocal_stream.write(micData)
+            else:
+                vocal_stream.write(vocalData)
+
+            vocalData = wf.readframes(chunk)
+
+        vocal_stream.stop_stream()
+        vocal_stream.close()
+        mic_stream.stop_stream()
+        mic_stream.close()
+        p.terminate()
+
+
+
+def execute(musicFile,vocalFile):
+
+    playMusicThread = PlayMusic(musicFile)
+    micInputThread = MicInput(vocalFile)
+
+    micInputThread.start(); 
+    playMusicThread.start(); 
+
+    playMusicThread.join()
+    micInputThread.join()
+
+execute(music_file,vocal_file)
