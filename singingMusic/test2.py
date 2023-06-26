@@ -1,6 +1,7 @@
+from multiprocessing import Process
 import pyaudio
 import wave
-import threading
+import numpy as np
 
 # 음악 파일 경로
 music_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/accompaniment.wav"
@@ -33,6 +34,7 @@ def play_music():
 
 # 마이크로 입력 함수
 def mic_input():
+
     p = pyaudio.PyAudio()
     stream = p.open(format=format,
                     channels=channels,
@@ -40,19 +42,24 @@ def mic_input():
                     input=True,
                     frames_per_buffer=chunk)
 
+    output_stream = p.open(format=format,
+                           channels=channels,
+                           rate=rate,
+                           output=True)
+
     while True:
         data = stream.read(chunk)
-        stream.write(data)
+        audio = np.frombuffer(data, dtype=np.int16)
+        amplitude = np.max(np.abs(audio))
+        print("마이크 진폭:", amplitude)
+        output_stream.write(data)
         # 마이크로 입력 데이터 처리 (원하는 동작 수행)
 
-# 음악 재생과 마이크 입력을 병렬로 처리하는 스레드 생성
-# music_thread = threading.Thread(target=play_music)
-mic_thread = threading.Thread(target=mic_input)
+playProcess =Process(target=play_music)
+mic_inputProccess= Process(target=mic_input)
 
-# 스레드 시작
-# music_thread.start()
-mic_thread.start()
+mic_inputProccess.start(); 
+playProcess.start(); 
 
-# 스레드 종료 대기
-# music_thread.join()
-mic_thread.join()
+playProcess.join()
+mic_inputProccess.join()
