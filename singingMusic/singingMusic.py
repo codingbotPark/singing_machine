@@ -5,8 +5,8 @@ import numpy as np
 import threading
 
 # 음악 파일 경로
-music_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/accompaniment.wav"
-vocal_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/vocals.wav"
+# music_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/accompaniment.wav"
+# vocal_file = "/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/vocals.wav"
 
 # 오디오 설정
 chunk = 1024  # 버퍼 크기
@@ -15,6 +15,10 @@ channels = 2  # 채널 수
 rate = 44100  # 샘플링 레이트
 
 class PlayMusic(threading.Thread):
+    # chunk = 1024  # 버퍼 크기
+    # format = pyaudio.paInt16  # 샘플 형식
+    # channels = 2  # 채널 수
+    # rate = 44100  # 샘플링 레이트
     def __init__(self,musciFilePath):
         super().__init__()
         self.musciFilePath = musciFilePath
@@ -38,11 +42,15 @@ class PlayMusic(threading.Thread):
         p.terminate()
 
 class MicInput(threading.Thread):
+    # chunk = 1024  # 버퍼 크기
+    # format = pyaudio.paInt16  # 샘플 형식
+    # channels = 2  # 채널 수
+    # rate = 44100  # 샘플링 레이트
     def __init__(self,vocalFile):
         super().__init__()
         self.vocalFile = vocalFile
     def run(self):
-        wf = wave.open(vocal_file, 'rb')
+        wf = wave.open(self.vocalFile, 'rb')
 
         p = pyaudio.PyAudio()
         vocal_stream = p.open(format=format,
@@ -79,15 +87,17 @@ class MicInput(threading.Thread):
 
 
 
-def execute(musicFile,vocalFile):
+# def execute(musicFile,vocalFile):
+#     # print(musicFile,vocalFile)
 
-    playMusicThread = PlayMusic(musicFile)
-    micInputThread = MicInput(vocalFile)
+#     playMusicThread = PlayMusic(musicFile)
+#     micInputThread = MicInput(vocalFile)
 
-    micInputThread.start(); 
-    playMusicThread.start(); 
+#     micInputThread.start(); 
+#     playMusicThread.start(); 
 
-    playMusicThread.join()
-    micInputThread.join()
+#     playMusicThread.join()
+#     micInputThread.join()
 
-execute(music_file,vocal_file)
+# execute(music_file,vocal_file)
+# execute("/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/accompaniment.wav","/home/codingbotpark/singing_supporter/musics/들리나요..._UC_pwIXKXNm5KGhdEVzmY60A/vocals.wav")

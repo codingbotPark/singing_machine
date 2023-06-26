@@ -1,4 +1,4 @@
-import 모듈이름(다른 파일 이름)
+import record_mr_sum
 
-모듈이름.실행할메인함수()
+record_mr_sum.main()
 
